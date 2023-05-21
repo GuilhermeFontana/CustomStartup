@@ -1,11 +1,4 @@
 ﻿{
-  "Start": [
-    "C:\\www\\FullSoft\\WMS\\Web\\Development\\Atual\\webservices-wms",
-    "https://www.google.com.br/",
-    "C:\\Program Files (x86)\\WinMerge\\WinMergeU.exe"
-  ],
-  "Close": [
-    "Opera",
-    "Notepad++"
-  ]
+  "Start": [],
+  "Close": []
 }
