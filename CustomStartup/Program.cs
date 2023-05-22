@@ -1,16 +1,22 @@
 ﻿using CustomStartup.Classes;
+using CustomStartup.Resources;
 using Newtonsoft.Json;
+using System;
 using System.Diagnostics;
 using System.IO;
-
 
 namespace CustomStartup {
     internal class Program {
         static void Main(string[] args) {
             string jsonFile = $@"{Directory.GetCurrentDirectory()}\programs.json";
 
-            if (!File.Exists(jsonFile))
+            if (!File.Exists(jsonFile)) {
+                Notification.SendNotification(
+                    "Arquivo com de configuração dos programas não localizado",
+                    "Verifique se o arquivo: \"programs.json\" encontra-se na pasta: " + Directory.GetCurrentDirectory()
+                );
                 return;
+            }
 
             string programsFile = File.ReadAllText(jsonFile);
 
@@ -21,15 +27,22 @@ namespace CustomStartup {
                     foreach (Process process in Process.GetProcessesByName(processesToClose))
                         process.Kill();
                 }
-                catch { }
+                catch (Exception e) {
+                    Notification.SendNotification($"Não foi possível encerrar o precesso: {processesToClose}", e.Message);
+                }
             }
 
             foreach (string processesToStart in programs.Start) {
                 try {
                     Process.Start(processesToStart);
                 }
-                catch { }
+                catch (Exception e) {
+                    Notification.SendNotification($"Não foi possível inicializar: {processesToStart}", e.Message);
+                }
             }
+
+            Notification.SendNotification($"Inicialização concluida", "😀");
+
         }
     }
 }
