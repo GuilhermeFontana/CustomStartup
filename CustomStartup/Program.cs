@@ -11,7 +11,7 @@ namespace CustomStartup {
             try {
                 string jsonFile = $@"{Directory.GetCurrentDirectory()}\programs.json";
 
-                if (!File.Exists(jsonFile)) {
+                if(!File.Exists(jsonFile)) {
                     Notification.SendNotification(
                         "Arquivo com de configuração dos programas não localizado",
                         "Verifique se o arquivo: \"programs.json\" encontra-se na pasta: " + Directory.GetCurrentDirectory()
@@ -23,21 +23,21 @@ namespace CustomStartup {
 
                 Programs programs = JsonConvert.DeserializeObject<Programs>(programsFile);
 
-                foreach (string processesToClose in programs.Close) {
+                foreach(string processesToClose in programs.Close) {
                     try {
-                        foreach (Process process in Process.GetProcessesByName(processesToClose))
+                        foreach(Process process in Process.GetProcessesByName(processesToClose))
                             process.Kill();
                     }
-                    catch (Exception e) {
+                    catch(Exception e) {
                         Notification.SendNotification($"Não foi possível encerrar o precesso: {processesToClose}", e.Message);
                     }
                 }
 
-                foreach (string processesToStart in programs.Start) {
+                foreach(string processesToStart in programs.Start) {
                     try {
                         Process.Start(processesToStart);
                     }
-                    catch (Exception e) {
+                    catch(Exception e) {
                         Notification.SendNotification($"Não foi possível inicializar: {processesToStart}", e.Message);
                     }
                 }
