@@ -1,4 +1,11 @@
 ﻿{
-  "Start": [],
-  "Close": []
+  "Configs": [
+    {
+      "Description":  "",
+      "Network": "",
+      "Start": [],
+      "Close": [],
+      "RunAlways": true
+    }
+  ]
 }

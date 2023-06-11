@@ -1,9 +1,12 @@
 ﻿using CustomStartup.Classes;
 using CustomStartup.Resources;
+using Microsoft.WindowsAPICodePack.Net;
 using Newtonsoft.Json;
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 
 namespace CustomStartup {
     internal class Program {
@@ -21,24 +24,42 @@ namespace CustomStartup {
 
                 string programsFile = File.ReadAllText(jsonFile);
 
-                Programs programs = JsonConvert.DeserializeObject<Programs>(programsFile);
 
-                foreach(string processesToClose in programs.Close) {
-                    try {
-                        foreach(Process process in Process.GetProcessesByName(processesToClose))
-                            process.Kill();
-                    }
-                    catch(Exception e) {
-                        Notification.SendNotification($"Não foi possível encerrar o precesso: {processesToClose}", e.Message);
-                    }
+                string networkName = string.Empty;
+                NetworkCollection networks = NetworkListManager.GetNetworks(NetworkConnectivityLevels.Connected);
+                foreach(Network network in networks) {
+                    networkName = network.Name;
                 }
 
-                foreach(string processesToStart in programs.Start) {
-                    try {
-                        Process.Start(processesToStart);
+                List<Config> configs = JsonConvert.DeserializeObject<Configurations>(programsFile).Configs.Where(x => (x.Network.ToLower() == networkName.ToLower() || x.RunAlways)).ToList();
+
+                if(configs.Count == 0) {
+                    Notification.SendNotification(
+                        "Nenhuma configuração não encontrada",
+                        $"Verifique se há configuração correspondente à sua rede atual (Network: {networkName}) " +
+                        $"ou marcado para executar sempre (RunAlways: true)"
+                    );
+                    return;
+                }
+
+                foreach(Config config in configs) {
+                    foreach(string processesToClose in config.Close) {
+                        try {
+                            foreach(Process process in Process.GetProcessesByName(processesToClose))
+                                process.Kill();
+                        }
+                        catch(Exception e) {
+                            Notification.SendNotification($"Não foi possível encerrar o precesso: {processesToClose}", e.Message);
+                        }
                     }
-                    catch(Exception e) {
-                        Notification.SendNotification($"Não foi possível inicializar: {processesToStart}", e.Message);
+
+                    foreach(string processesToStart in config.Start) {
+                        try {
+                            Process.Start(processesToStart);
+                        }
+                        catch(Exception e) {
+                            Notification.SendNotification($"Não foi possível inicializar: {processesToStart}", e.Message);
+                        }
                     }
                 }
 
