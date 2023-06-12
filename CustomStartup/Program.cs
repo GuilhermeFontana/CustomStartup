@@ -12,12 +12,12 @@ namespace CustomStartup {
     internal class Program {
         static void Main(string[] args) {
             try {
-                string jsonFile = $@"{Directory.GetCurrentDirectory()}\programs.json";
+                string jsonFile = $@"{Directory.GetCurrentDirectory()}\configs.json";
 
                 if(!File.Exists(jsonFile)) {
                     Notification.SendNotification(
                         "Arquivo com de configuração dos programas não localizado",
-                        "Verifique se o arquivo: \"programs.json\" encontra-se na pasta: " + Directory.GetCurrentDirectory()
+                        "Verifique se o arquivo: \"configs.json\" encontra-se na pasta: " + Directory.GetCurrentDirectory()
                     );
                     return;
                 }
